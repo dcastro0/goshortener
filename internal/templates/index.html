@@ -4,80 +4,104 @@
 
 {{define "content"}}
 <div x-data="shortenerApp">
-    <form @submit.prevent="submit" class="flex flex-col gap-4">
-        <div>
-            <label for="url" class="block text-sm font-medium text-gray-300 mb-1">Cole sua URL longa</label>
-            <input 
-                type="url" 
-                x-model="url"
-                placeholder="https://exemplo.com/artigo-muito-longo" 
-                required
-                class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-white placeholder-gray-400 transition"
-            >
-        </div>
+    
+    <div class="flex border-b border-gray-700 mb-6">
+        <button 
+            @click="mode = 'create'; error = null; result = null;"
+            :class="mode === 'create' ? 'border-blue-500 text-blue-400' : 'border-transparent text-gray-400 hover:text-gray-200'"
+            class="w-1/2 py-2 text-center font-medium border-b-2 transition"
+        >
+            Encurtar Novo
+        </button>
+        <button 
+            @click="mode = 'inspect'; error = null; result = null;"
+            :class="mode === 'inspect' ? 'border-blue-500 text-blue-400' : 'border-transparent text-gray-400 hover:text-gray-200'"
+            class="w-1/2 py-2 text-center font-medium border-b-2 transition"
+        >
+            Verificar Link
+        </button>
+    </div>
 
-        <div>
-            <button 
-                type="button" 
-                @click="showAlias = true" 
-                x-show="!showAlias"
-                class="text-sm text-blue-400 hover:text-blue-300 hover:underline focus:outline-none transition"
-            >
-                + Personalizar Link (Opcional)
+    <div x-show="mode === 'create'" x-transition>
+        <form @submit.prevent="submitShorten" class="flex flex-col gap-4">
+            <div>
+                <label for="url" class="block text-sm font-medium text-gray-300 mb-1">Cole sua URL longa</label>
+                <input type="url" x-model="url" placeholder="https://exemplo.com/artigo" required
+                    class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-white transition">
+            </div>
+
+            <div>
+                <button type="button" @click="showAlias = true" x-show="!showAlias"
+                    class="text-sm text-blue-400 hover:text-blue-300 hover:underline transition">
+                    + Personalizar Link (Opcional)
+                </button>
+            </div>
+
+            <div x-show="showAlias" class="hidden" :class="{'hidden': !showAlias}">
+                <label class="block text-sm font-medium text-gray-300 mb-1">Apelido</label>
+                <div class="flex">
+                    <span class="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-gray-600 bg-gray-800 text-gray-400 text-sm">/</span>
+                    <input type="text" x-model="alias" placeholder="minha-promo"
+                        class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-r-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-white transition">
+                </div>
+            </div>
+
+            <button type="submit" :disabled="loading"
+                class="w-full py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 text-white font-semibold rounded-lg shadow-md transition mt-2"
+                x-text="loading ? 'Encurtando...' : 'Encurtar Link'">
             </button>
-        </div>
+        </form>
 
-        <div x-show="showAlias" x-transition class="hidden" :class="{'hidden': !showAlias}">
-            <label for="alias" class="block text-sm font-medium text-gray-300 mb-1">
-                Apelido Personalizado
-            </label>
-            <div class="flex">
-                <span class="inline-flex items-center px-3 rounded-l-lg border border-r-0 border-gray-600 bg-gray-800 text-gray-400 text-sm">
-                   /
-                </span>
-                <input 
-                    type="text" 
-                    x-model="alias"
-                    placeholder="minha-promo" 
-                    class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-r-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-white placeholder-gray-400 transition"
-                >
+        <div x-show="shortenResult" x-transition class="mt-6 p-4 bg-gray-700/50 rounded-lg border border-gray-600 text-center">
+            <p class="text-sm text-gray-300 mb-2">Seu link encurtado:</p>
+            <div class="flex items-center gap-2 mb-4">
+                <input type="text" :value="shortenResult?.short_url" readonly
+                    class="w-full bg-gray-900 text-blue-400 px-3 py-2 rounded border border-gray-700 text-center font-mono text-sm">
+                <button @click="copyLink" class="p-2 bg-gray-600 hover:bg-gray-500 rounded text-white" title="Copiar">📋</button>
+            </div>
+            <div x-show="shortenResult?.qr_code" class="flex justify-center p-4 bg-white/5 rounded border border-white/10">
+                <img :src="'data:image/png;base64,' + shortenResult?.qr_code" class="w-32 h-32 bg-white rounded">
             </div>
         </div>
+    </div>
 
-        <button 
-            type="submit" 
-            :disabled="loading"
-            class="w-full py-3 bg-blue-600 hover:bg-blue-700 disabled:bg-blue-800 disabled:cursor-not-allowed text-white font-semibold rounded-lg shadow-md transition duration-200 mt-2"
-            x-text="loading ? 'Encurtando...' : 'Encurtar Link'"
-        >
-        </button>
-        
-        <div x-show="error" class="mt-4 p-3 bg-red-900/50 border border-red-700 text-red-200 rounded text-sm text-center">
-            <span x-text="error"></span>
-        </div>
-    </form>
+    <div x-show="mode === 'inspect'" x-transition style="display: none;">
+        <form @submit.prevent="submitInspect" class="flex flex-col gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-300 mb-1">Link Encurtado ou Código</label>
+                <input type="text" x-model="inspectCode" placeholder="localhost:8080/AbC123" required
+                    class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-green-500 focus:outline-none text-white transition">
+            </div>
 
-    <div x-show="result" x-transition class="mt-6 p-4 bg-gray-700/50 rounded-lg border border-gray-600 text-center">
-        <p class="text-sm text-gray-300 mb-2">Seu link encurtado:</p>
-        
-        <div class="flex items-center gap-2 mb-4">
-            <input 
-                type="text" 
-                :value="result?.short_url"
-                readonly 
-                class="w-full bg-gray-900 text-blue-400 px-3 py-2 rounded border border-gray-700 text-center font-mono text-sm"
-            >
-            <button @click="copyLink" class="p-2 bg-gray-600 hover:bg-gray-500 rounded text-white" title="Copiar">
-                📋
+            <button type="submit" :disabled="loading"
+                class="w-full py-3 bg-green-600 hover:bg-green-700 disabled:bg-green-800 text-white font-semibold rounded-lg shadow-md transition mt-2"
+                x-text="loading ? 'Verificando...' : 'Verificar Estatísticas'">
             </button>
-        </div>
+        </form>
 
-        <div x-show="result?.qr_code" class="flex flex-col items-center justify-center p-4 bg-white/5 rounded-lg border border-white/10">
-            <p class="text-xs text-gray-400 mb-2 uppercase tracking-wide">QR Code</p>
-            <img :src="'data:image/png;base64,' + result?.qr_code" alt="QR Code" class="w-32 h-32 rounded border border-white/20 bg-white">
+        <div x-show="inspectResult" x-transition class="mt-6 p-5 bg-gray-800 rounded-lg border border-gray-600 shadow-inner">
+            <div class="grid grid-cols-2 gap-4 mb-4">
+                <div class="bg-gray-700 p-3 rounded text-center">
+                    <p class="text-xs text-gray-400 uppercase">Cliques Totais</p>
+                    <p class="text-2xl font-bold text-green-400" x-text="inspectResult?.clicks"></p>
+                </div>
+                <div class="bg-gray-700 p-3 rounded text-center">
+                    <p class="text-xs text-gray-400 uppercase">Criado em</p>
+                    <p class="text-sm font-mono text-gray-200 mt-1" x-text="new Date(inspectResult?.created_at).toLocaleDateString('pt-BR')"></p>
+                </div>
+            </div>
+            
+            <div class="text-left">
+                <p class="text-xs text-gray-400 uppercase mb-1">Destino Original</p>
+                <div class="p-3 bg-gray-900 rounded border border-gray-700 break-all">
+                    <a :href="inspectResult?.original_url" target="_blank" class="text-blue-400 hover:underline text-sm" x-text="inspectResult?.original_url"></a>
+                </div>
+            </div>
         </div>
     </div>
-</div>
 
+    <div x-show="error" class="mt-4 p-3 bg-red-900/50 border border-red-700 text-red-200 rounded text-sm text-center" x-text="error"></div>
+
+</div>
 <script src="/static/js/app.js"></script>
 {{end}}

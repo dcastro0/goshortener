@@ -8,6 +8,7 @@ import (
 	"goshortener/pkg/utils"
 	"net/http"
 	"net/url"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 	"github.com/skip2/go-qrcode"
@@ -17,6 +18,10 @@ import (
 type ShortenRequest struct {
 	URL   string `json:"url"`
 	Alias string `json:"alias"`
+}
+
+type InspectRequest struct {
+	Code string `json:"code"`
 }
 
 func ShortenURL(c echo.Context) error {
@@ -64,6 +69,31 @@ func ShortenURL(c echo.Context) error {
 		"short_url": c.Request().Host + "/" + link.Hash,
 		"hash":      hash,
 		"qr_code":   qrBase64,
+	})
+}
+
+func InspectLink(c echo.Context) error {
+	req := new(InspectRequest)
+	if err := c.Bind(req); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Requisição inválida"})
+	}
+
+	hash := req.Code
+	if strings.Contains(hash, "/") {
+		parts := strings.Split(hash, "/")
+		hash = parts[len(parts)-1]
+	}
+
+	var link models.ShortLink
+	if err := database.DB.Where("hash = ?", hash).First(&link).Error; err != nil {
+		return c.JSON(http.StatusNotFound, map[string]string{"error": "Link não encontrado"})
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"original_url": link.OriginalURL,
+		"hash":         link.Hash,
+		"clicks":       link.Clicks,
+		"created_at":   link.CreatedAt,
 	})
 }
 

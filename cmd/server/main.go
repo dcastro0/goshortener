@@ -36,6 +36,7 @@ func main() {
 	})
 
 	e.GET("/stats", handlers.GetStats)
+	e.POST("/inspect", handlers.InspectLink) // Nova Rota
 	e.POST("/shorten", handlers.ShortenURL)
 	e.GET("/:hash", handlers.Redirect)
 

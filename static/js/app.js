@@ -1,38 +1,60 @@
 document.addEventListener('alpine:init', () => {
     Alpine.data('shortenerApp', () => ({
+        mode: 'create', 
+        
         url: '',
         alias: '',
         showAlias: false,
+        shortenResult: null,
+
+        inspectCode: '',
+        inspectResult: null,
+
         loading: false,
-        result: null,
         error: null,
 
-        async submit() {
+        async submitShorten() {
             this.loading = true;
             this.error = null;
-            this.result = null;
+            this.shortenResult = null;
 
             try {
                 const response = await fetch('/shorten', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        url: this.url, 
-                        alias: this.alias 
-                    })
+                    body: JSON.stringify({ url: this.url, alias: this.alias })
                 });
-                
                 const data = await response.json();
                 
-                if (!response.ok) {
-                    throw new Error(data.error || 'Erro desconhecido');
-                }
+                if (!response.ok) throw new Error(data.error || 'Erro ao encurtar');
 
-                this.result = data;
+                this.shortenResult = data;
                 this.url = '';
                 this.alias = '';
                 this.showAlias = false;
+            } catch (err) {
+                this.error = err.message;
+            } finally {
+                this.loading = false;
+            }
+        },
 
+        async submitInspect() {
+            this.loading = true;
+            this.error = null;
+            this.inspectResult = null;
+
+            try {
+                const response = await fetch('/inspect', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ code: this.inspectCode })
+                });
+                const data = await response.json();
+
+                if (!response.ok) throw new Error(data.error || 'Link não encontrado');
+
+                this.inspectResult = data;
             } catch (err) {
                 this.error = err.message;
             } finally {
@@ -41,8 +63,8 @@ document.addEventListener('alpine:init', () => {
         },
 
         copyLink() {
-            if (!this.result) return;
-            navigator.clipboard.writeText(this.result.short_url);
+            if (!this.shortenResult) return;
+            navigator.clipboard.writeText(this.shortenResult.short_url);
             alert("Link copiado!");
         }
     }));
