@@ -23,6 +23,7 @@ func main() {
 	templates := make(map[string]*template.Template)
 	templates["index"] = template.Must(template.ParseFiles("internal/templates/base.html", "internal/templates/index.html"))
 	templates["stats"] = template.Must(template.ParseFiles("internal/templates/base.html", "internal/templates/stats.html"))
+	templates["link_password"] = template.Must(template.ParseFiles("internal/templates/link_password.html"))
 
 	e.Renderer = &utils.TemplateRegistry{
 		Templates: templates,

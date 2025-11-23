@@ -12,16 +12,19 @@ import (
 
 	"github.com/labstack/echo/v4"
 	"github.com/skip2/go-qrcode"
+	"golang.org/x/crypto/bcrypt"
 	"gorm.io/gorm"
 )
 
 type ShortenRequest struct {
-	URL   string `json:"url"`
-	Alias string `json:"alias"`
+	URL      string `json:"url"`
+	Alias    string `json:"alias"`
+	Password string `json:"password"`
 }
 
 type InspectRequest struct {
-	Code string `json:"code"`
+	Code     string `json:"code"`
+	Password string `json:"password"`
 }
 
 func ShortenURL(c echo.Context) error {
@@ -51,12 +54,19 @@ func ShortenURL(c echo.Context) error {
 		Hash:        hash,
 	}
 
+	if req.Password != "" {
+		bytes, err := bcrypt.GenerateFromPassword([]byte(req.Password), 14)
+		if err != nil {
+			return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Erro ao processar senha"})
+		}
+		link.Password = string(bytes)
+	}
+
 	if err := database.DB.Create(&link).Error; err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Erro ao salvar no banco"})
 	}
 
 	fullShortURL := fmt.Sprintf("http://%s/%s", c.Request().Host, hash)
-
 	png, _ := qrcode.Encode(fullShortURL, qrcode.Medium, 256)
 
 	qrBase64 := ""
@@ -89,34 +99,70 @@ func InspectLink(c echo.Context) error {
 		return c.JSON(http.StatusNotFound, map[string]string{"error": "Link não encontrado"})
 	}
 
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"original_url": link.OriginalURL,
-		"hash":         link.Hash,
-		"clicks":       link.Clicks,
-		"created_at":   link.CreatedAt,
-	})
+	response := map[string]interface{}{
+		"hash":       link.Hash,
+		"created_at": link.CreatedAt,
+		"protected":  false,
+	}
+
+	if link.Password != "" {
+		response["protected"] = true
+
+		if req.Password != "" {
+			err := bcrypt.CompareHashAndPassword([]byte(link.Password), []byte(req.Password))
+			if err == nil {
+				response["original_url"] = link.OriginalURL
+				response["clicks"] = link.Clicks
+				response["unlocked"] = true
+			} else {
+				response["error"] = "Senha incorreta"
+			}
+		} else {
+			response["original_url"] = "🔒 Protegido por Senha"
+			response["clicks"] = -1
+		}
+	} else {
+		response["original_url"] = link.OriginalURL
+		response["clicks"] = link.Clicks
+	}
+
+	return c.JSON(http.StatusOK, response)
 }
 
 func Redirect(c echo.Context) error {
 	hash := c.Param("hash")
 
 	var link models.ShortLink
-
 	if err := database.DB.Where("hash = ?", hash).First(&link).Error; err != nil {
-		return c.JSON(http.StatusNotFound, map[string]string{"error": "Link não encontrado"})
+		return c.Render(http.StatusNotFound, "404", nil)
+	}
+
+	if link.Password != "" {
+		if c.Request().Method == http.MethodPost {
+			password := c.FormValue("password")
+			err := bcrypt.CompareHashAndPassword([]byte(link.Password), []byte(password))
+			if err != nil {
+				return c.Render(http.StatusUnauthorized, "link_password", map[string]interface{}{
+					"Hash":  hash,
+					"Error": "Senha incorreta",
+				})
+			}
+		} else {
+			return c.Render(http.StatusOK, "link_password", map[string]interface{}{
+				"Hash": hash,
+			})
+		}
 	}
 
 	database.DB.Model(&link).UpdateColumn("clicks", gorm.Expr("clicks + 1"))
-
 	return c.Redirect(http.StatusFound, link.OriginalURL)
 }
 
 func GetStats(c echo.Context) error {
 	var links []models.ShortLink
-	if err := database.DB.Order("created_at desc").Find(&links).Error; err != nil {
+	if err := database.DB.Order("created_at desc").Limit(50).Find(&links).Error; err != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Erro ao buscar dados"})
 	}
-
 	return c.Render(http.StatusOK, "stats", map[string]interface{}{
 		"Links": links,
 	})
