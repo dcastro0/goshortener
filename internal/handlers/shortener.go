@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"encoding/base64"
+	"fmt"
 	"goshortener/internal/database"
 	"goshortener/internal/models"
 	"goshortener/pkg/utils"
@@ -8,11 +10,13 @@ import (
 	"net/url"
 
 	"github.com/labstack/echo/v4"
+	"github.com/skip2/go-qrcode"
 	"gorm.io/gorm"
 )
 
 type ShortenRequest struct {
-	URL string `json:"url"`
+	URL   string `json:"url"`
+	Alias string `json:"alias"`
 }
 
 func ShortenURL(c echo.Context) error {
@@ -25,7 +29,18 @@ func ShortenURL(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "URL inválida"})
 	}
 
-	hash := utils.GenerateRandomString(6)
+	var hash string
+
+	if req.Alias != "" {
+		var existing models.ShortLink
+		if err := database.DB.Where("hash = ?", req.Alias).First(&existing).Error; err == nil {
+			return c.JSON(http.StatusConflict, map[string]string{"error": "Este alias já está em uso"})
+		}
+		hash = req.Alias
+	} else {
+		hash = utils.GenerateRandomString(6)
+	}
+
 	link := models.ShortLink{
 		OriginalURL: req.URL,
 		Hash:        hash,
@@ -35,10 +50,20 @@ func ShortenURL(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Erro ao salvar no banco"})
 	}
 
+	fullShortURL := fmt.Sprintf("http://%s/%s", c.Request().Host, hash)
+
+	png, _ := qrcode.Encode(fullShortURL, qrcode.Medium, 256)
+
+	qrBase64 := ""
+	if png != nil {
+		qrBase64 = base64.StdEncoding.EncodeToString(png)
+	}
+
 	return c.JSON(http.StatusOK, map[string]string{
 		"message":   "Link encurtado com sucesso",
 		"short_url": c.Request().Host + "/" + link.Hash,
 		"hash":      hash,
+		"qr_code":   qrBase64,
 	})
 }
 
