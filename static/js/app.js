@@ -13,6 +13,19 @@ document.addEventListener('alpine:init', () => {
         loading: false,
         error: null,
 
+        init() {
+            const params = new URLSearchParams(window.location.search);
+            const inspectHash = params.get('inspect');
+
+            if (inspectHash) {
+                this.mode = 'inspect';
+                this.inspectCode = inspectHash;
+                this.submitInspect();
+                
+                window.history.replaceState({}, document.title, "/");
+            }
+        },
+
         async submitShorten() {
             this.loading = true;
             this.error = null;
@@ -65,7 +78,6 @@ document.addEventListener('alpine:init', () => {
         copyLink() {
             if (!this.shortenResult) return;
             navigator.clipboard.writeText(this.shortenResult.short_url);
-            alert("Link copiado!");
         }
     }));
 });

@@ -3,48 +3,64 @@
 {{end}}
 
 {{define "content"}}
-<div class="w-full">
-    <h2 class="text-xl font-semibold text-white mb-4 text-center">Estatísticas de Acesso</h2>
+<div class="glass rounded-2xl p-8 shadow-2xl ring-1 ring-white/10 relative overflow-hidden">
+    
+    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-purple-500"></div>
 
-    <div class="overflow-x-auto rounded-lg border border-gray-700">
-        <table class="w-full text-left text-sm text-gray-400">
-            <thead class="bg-gray-700 text-gray-200 uppercase">
+    <div class="flex items-center justify-between mb-8">
+        <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+            📊 Dashboard
+        </h2>
+        <a href="/" class="px-4 py-2 rounded-lg bg-slate-800/50 hover:bg-slate-700 border border-slate-700 text-sm text-slate-300 transition-all hover:text-white flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            Voltar
+        </a>
+    </div>
+
+    <div class="overflow-hidden rounded-xl border border-slate-700/50 shadow-inner bg-slate-900/30">
+        <table class="w-full text-left text-sm text-slate-400">
+            <thead class="bg-slate-900/80 text-slate-200 uppercase tracking-wider text-xs font-semibold border-b border-slate-700">
                 <tr>
-                    <th scope="col" class="px-4 py-3">Link Original</th>
-                    <th scope="col" class="px-4 py-3 text-center">Encurtado</th>
-                    <th scope="col" class="px-4 py-3 text-center">Cliques</th>
+                    <th scope="col" class="px-6 py-4">Link Original</th>
+                    <th scope="col" class="px-6 py-4 text-center">Ações</th>
+                    <th scope="col" class="px-6 py-4 text-center">Cliques</th>
                 </tr>
             </thead>
-            <tbody class="divide-y divide-gray-700 bg-gray-800">
+            <tbody class="divide-y divide-slate-700/50">
                 {{range .Links}}
-                <tr class="hover:bg-gray-700/50 transition">
-                    <td class="px-4 py-3 font-medium text-white truncate max-w-[150px]" title="{{.OriginalURL}}">
-                        {{.OriginalURL}}
+                <tr class="hover:bg-white/5 transition duration-150 group">
+                    <td class="px-6 py-4 font-medium text-slate-300 truncate max-w-[200px] sm:max-w-[300px]">
+                        <div class="flex items-center gap-3">
+                            <div class="p-2 rounded bg-slate-800 border border-slate-700 text-slate-500 group-hover:text-blue-400 group-hover:border-blue-500/30 transition">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                            </div>
+                            <span class="truncate" title="{{.OriginalURL}}">{{.OriginalURL}}</span>
+                        </div>
                     </td>
-                    <td class="px-4 py-3 text-center">
-                        <a href="/{{.Hash}}" target="_blank" class="text-blue-400 hover:text-blue-300 hover:underline">
+                    <td class="px-6 py-4 text-center">
+                        <a href="/?inspect={{.Hash}}" class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-purple-500/10 text-purple-400 border border-purple-500/20 hover:bg-purple-500/20 hover:border-purple-500/40 transition text-xs font-medium cursor-pointer">
+                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
                             {{.Hash}}
                         </a>
                     </td>
-                    <td class="px-4 py-3 text-center font-bold text-green-400">
-                        {{.Clicks}}
+                    <td class="px-6 py-4 text-center">
+                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500/10 text-green-400 border border-green-500/20">
+                            {{.Clicks}}
+                        </span>
                     </td>
                 </tr>
                 {{else}}
                 <tr>
-                    <td colspan="3" class="px-4 py-8 text-center text-gray-500 italic">
-                        Nenhum link criado ainda.
+                    <td colspan="3" class="px-6 py-12 text-center">
+                        <div class="flex flex-col items-center justify-center text-slate-500">
+                            <svg class="w-12 h-12 mb-3 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                            <p class="text-lg font-medium">Nenhum link criado ainda</p>
+                        </div>
                     </td>
                 </tr>
                 {{end}}
             </tbody>
         </table>
-    </div>
-    
-    <div class="mt-6 text-center">
-        <a href="/" class="inline-block text-sm text-gray-500 hover:text-white transition">
-            &larr; Voltar para Home
-        </a>
     </div>
 </div>
 {{end}}
