@@ -1,0 +1,87 @@
+{{define "index"}}
+{{template "base" .}}
+{{end}}
+
+{{define "content"}}
+<div id="app">
+    <form id="shortenForm" class="flex flex-col gap-4">
+        <div>
+            <label for="url" class="block text-sm font-medium text-gray-300 mb-1">Cole sua URL longa</label>
+            <input 
+                type="url" 
+                id="url" 
+                name="url" 
+                placeholder="https://exemplo.com/artigo-muito-longo" 
+                required
+                class="w-full px-4 py-3 bg-gray-700 border border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 focus:outline-none text-white placeholder-gray-400 transition"
+            >
+        </div>
+        <button 
+            type="submit" 
+            class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-md transition duration-200"
+        >
+            Encurtar Link
+        </button>
+    </form>
+
+    <div id="result" class="hidden mt-6 p-4 bg-gray-700/50 rounded-lg border border-gray-600 text-center animate-pulse">
+        <p class="text-sm text-gray-300 mb-2">Seu link encurtado:</p>
+        <div class="flex items-center gap-2">
+            <input 
+                type="text" 
+                id="shortUrl" 
+                readonly 
+                class="w-full bg-gray-900 text-blue-400 px-3 py-2 rounded border border-gray-700 text-center font-mono text-sm"
+            >
+            <button onclick="copyLink()" class="p-2 bg-gray-600 hover:bg-gray-500 rounded text-white" title="Copiar">
+                📋
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('shortenForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const url = document.getElementById('url').value;
+        const btn = e.target.querySelector('button');
+        
+        btn.disabled = true;
+        btn.innerText = "Encurtando...";
+
+        try {
+            const response = await fetch('/shorten', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ url })
+            });
+            
+            const data = await response.json();
+            
+            if (response.ok) {
+                const resultDiv = document.getElementById('result');
+                const input = document.getElementById('shortUrl');
+                
+                resultDiv.classList.remove('hidden');
+                resultDiv.classList.remove('animate-pulse');
+                input.value = data.short_url;
+            } else {
+                alert("Erro: " + data.error);
+            }
+        } catch (error) {
+            console.error(error);
+            alert("Erro ao conectar com o servidor.");
+        } finally {
+            btn.disabled = false;
+            btn.innerText = "Encurtar Link";
+        }
+    });
+
+    function copyLink() {
+        const copyText = document.getElementById("shortUrl");
+        copyText.select();
+        navigator.clipboard.writeText(copyText.value);
+        alert("Link copiado!");
+    }
+</script>
+{{end}}
