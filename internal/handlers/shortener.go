@@ -5,8 +5,10 @@ import (
 	"goshortener/internal/models"
 	"goshortener/pkg/utils"
 	"net/http"
+	"net/url"
 
 	"github.com/labstack/echo/v4"
+	"gorm.io/gorm"
 )
 
 type ShortenRequest struct {
@@ -17,6 +19,10 @@ func ShortenURL(c echo.Context) error {
 	req := new(ShortenRequest)
 	if err := c.Bind(req); err != nil {
 		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Requisição inválida"})
+	}
+
+	if _, err := url.ParseRequestURI(req.URL); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "URL inválida"})
 	}
 
 	hash := utils.GenerateRandomString(6)
@@ -45,8 +51,7 @@ func Redirect(c echo.Context) error {
 		return c.JSON(http.StatusNotFound, map[string]string{"error": "Link não encontrado"})
 	}
 
-	link.Clicks++
-	database.DB.Save(&link)
+	database.DB.Model(&link).UpdateColumn("clicks", gorm.Expr("clicks + 1"))
 
 	return c.Redirect(http.StatusFound, link.OriginalURL)
 }
