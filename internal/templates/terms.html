@@ -1,0 +1,43 @@
+{{define "terms"}}
+{{template "base" .}}
+{{end}}
+
+{{define "content"}}
+<div class="glass rounded-2xl p-8 shadow-2xl ring-1 ring-white/10 relative overflow-hidden text-left">
+    
+    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-purple-500"></div>
+
+    <div class="flex items-center justify-between mb-8">
+        <h2 class="text-2xl font-bold text-white">📜 Termos de Uso</h2>
+        <a href="/" class="px-4 py-2 rounded-lg bg-slate-800/50 hover:bg-slate-700 border border-slate-700 text-sm text-slate-300 transition-all hover:text-white flex items-center gap-2">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+            Voltar
+        </a>
+    </div>
+
+    <div class="prose prose-invert max-w-none text-slate-300 text-sm leading-relaxed">
+        <p class="mb-4">Bem-vindo ao <strong>GoShortener</strong>. Ao utilizar nosso serviço de encurtamento de URLs, você concorda com os termos descritos abaixo.</p>
+
+        <h3 class="text-lg font-semibold text-white mt-6 mb-2">1. Uso Aceitável</h3>
+        <p>O serviço é gratuito e aberto, mas não permitimos o uso para:</p>
+        <ul class="list-disc pl-5 space-y-1 mb-4">
+            <li>Links de Phishing, Malware ou Vírus.</li>
+            <li>Conteúdo ilegal, discurso de ódio ou assédio.</li>
+            <li>Spam em massa (email, SMS, redes sociais).</li>
+        </ul>
+
+        <h3 class="text-lg font-semibold text-white mt-6 mb-2">2. Remoção de Links</h3>
+        <p>Reservamo-nos o direito de remover qualquer link que viole nossas políticas sem aviso prévio. Links inativos por mais de 12 meses poderão ser reciclados.</p>
+
+        <h3 class="text-lg font-semibold text-white mt-6 mb-2">3. Isenção de Responsabilidade</h3>
+        <p>O GoShortener não se responsabiliza pelo conteúdo dos links redirecionados. O serviço é fornecido "como está", sem garantias de uptime ou perpetuidade.</p>
+
+        <h3 class="text-lg font-semibold text-white mt-6 mb-2">4. Privacidade</h3>
+        <p>Coletamos dados anônimos de acesso (cliques e data) apenas para fins estatísticos do próprio usuário. Não compartilhamos dados com terceiros.</p>
+    </div>
+    
+    <div class="mt-8 pt-6 border-t border-slate-700 text-center text-xs text-slate-500">
+        Última atualização: Novembro de 2025
+    </div>
+</div>
+{{end}}

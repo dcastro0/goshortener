@@ -16,6 +16,10 @@
             -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: rgba(30, 41, 59, 0.5); }
+        ::-webkit-scrollbar-thumb { background: rgba(75, 85, 99, 0.8); border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(107, 114, 128, 1); }
     </style>
 </head>
 <body class="bg-slate-900 text-slate-50 min-h-screen flex flex-col items-center justify-center relative overflow-hidden">
@@ -25,19 +29,14 @@
         <div class="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-purple-600/20 rounded-full blur-[120px]"></div>
     </div>
 
-    <nav class="absolute top-6 right-6 z-20">
-        <a href="/stats" class="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-sm font-medium text-slate-300 transition-all hover:text-white hover:border-white/30 backdrop-blur-sm flex items-center gap-2 group shadow-lg">
-            <svg class="w-4 h-4 text-slate-400 group-hover:text-blue-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-            </svg>
-            Dashboard
-        </a>
-    </nav>
-
-    <main class="w-full max-w-xl p-4 relative z-10">
+    <main class="w-full max-w-xl p-4 relative z-10 flex-grow flex flex-col justify-center">
         <header class="mb-10 text-center">
             <div class="inline-flex items-center gap-3 mb-2 animate-bounce-slow">
-                <span class="text-4xl filter drop-shadow-lg">🚀</span>
+                <div class="p-2 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl shadow-lg">
+                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                    </svg>
+                </div>
                 <h1 class="text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 tracking-tight">
                     GoShortener
                 </h1>
@@ -48,8 +47,17 @@
         {{template "content" .}}
     </main>
 
-    <footer class="mt-12 text-sm text-slate-500 font-medium">
-        Feito com <span class="text-blue-400">Go</span> + <span class="text-purple-400">Alpine</span>
+    <footer class="w-full max-w-xl mt-12 mb-6 px-4 relative z-10">
+        <div class="border-t border-slate-800 pt-6 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-slate-500">
+            <div>
+                &copy; 2025 GoShortener.
+            </div>
+            <div class="flex gap-6">
+                <a href="/terms" class="hover:text-blue-400 transition">Termos</a>
+                <a href="/contact" class="hover:text-purple-400 transition">Contato</a>
+                <a href="https://github.com" target="_blank" class="hover:text-white transition">GitHub</a>
+            </div>
+        </div>
     </footer>
 
 </body>

@@ -100,9 +100,11 @@ func InspectLink(c echo.Context) error {
 	}
 
 	response := map[string]interface{}{
-		"hash":       link.Hash,
-		"created_at": link.CreatedAt,
-		"protected":  false,
+		"original_url": link.OriginalURL,
+		"hash":         link.Hash,
+		"clicks":       link.Clicks,
+		"created_at":   link.CreatedAt,
+		"protected":    false,
 	}
 
 	if link.Password != "" {
@@ -111,19 +113,16 @@ func InspectLink(c echo.Context) error {
 		if req.Password != "" {
 			err := bcrypt.CompareHashAndPassword([]byte(link.Password), []byte(req.Password))
 			if err == nil {
-				response["original_url"] = link.OriginalURL
-				response["clicks"] = link.Clicks
 				response["unlocked"] = true
 			} else {
 				response["error"] = "Senha incorreta"
+				response["original_url"] = "🔒 Protegido"
+				response["clicks"] = -1
 			}
 		} else {
-			response["original_url"] = "🔒 Protegido por Senha"
+			response["original_url"] = "🔒 Protegido"
 			response["clicks"] = -1
 		}
-	} else {
-		response["original_url"] = link.OriginalURL
-		response["clicks"] = link.Clicks
 	}
 
 	return c.JSON(http.StatusOK, response)
@@ -159,11 +158,55 @@ func Redirect(c echo.Context) error {
 }
 
 func GetStats(c echo.Context) error {
+	q := c.QueryParam("q")
+
 	var links []models.ShortLink
-	if err := database.DB.Order("created_at desc").Limit(50).Find(&links).Error; err != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Erro ao buscar dados"})
+	query := database.DB.Order("created_at desc").Limit(50)
+
+	if q != "" {
+		search := "%" + q + "%"
+		query = query.Where("original_url ILIKE ? OR hash ILIKE ?", search, search)
 	}
+	if err := query.Find(&links).Error; err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Erro ao buscar links"})
+	}
+
+	var messages []models.ContactMessage
+	if err := database.DB.Order("created_at desc").Find(&messages).Error; err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Erro ao buscar mensagens"})
+	}
+
+	var totalLinks int64
+	database.DB.Model(&models.ShortLink{}).Count(&totalLinks)
+
+	var totalClicks int64
+	database.DB.Model(&models.ShortLink{}).Select("coalesce(sum(clicks), 0)").Scan(&totalClicks)
+
+	var totalMessages int64
+	database.DB.Model(&models.ContactMessage{}).Count(&totalMessages)
+
 	return c.Render(http.StatusOK, "stats", map[string]interface{}{
-		"Links": links,
+		"Links":         links,
+		"Messages":      messages,
+		"Query":         q,
+		"TotalLinks":    totalLinks,
+		"TotalClicks":   totalClicks,
+		"TotalMessages": totalMessages,
 	})
+}
+
+func DeleteLink(c echo.Context) error {
+	id := c.Param("id")
+	if err := database.DB.Delete(&models.ShortLink{}, id).Error; err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Erro ao deletar"})
+	}
+	return c.NoContent(http.StatusNoContent)
+}
+
+func DeleteMessage(c echo.Context) error {
+	id := c.Param("id")
+	if err := database.DB.Delete(&models.ContactMessage{}, id).Error; err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Erro ao deletar mensagem"})
+	}
+	return c.NoContent(http.StatusNoContent)
 }

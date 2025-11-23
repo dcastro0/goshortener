@@ -3,64 +3,142 @@
 {{end}}
 
 {{define "content"}}
-<div class="glass rounded-2xl p-8 shadow-2xl ring-1 ring-white/10 relative overflow-hidden">
-    
-    <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-500 to-purple-500"></div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    <div class="flex items-center justify-between mb-8">
-        <h2 class="text-2xl font-bold text-white flex items-center gap-2">
-            📊 Dashboard
-        </h2>
-        <a href="/" class="px-4 py-2 rounded-lg bg-slate-800/50 hover:bg-slate-700 border border-slate-700 text-sm text-slate-300 transition-all hover:text-white flex items-center gap-2">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-            Voltar
-        </a>
+<script>
+    window.statsData = JSON.parse(`[
+        {{range $i, $l := .Links}}{{if $i}},{{end}}{"hash":"{{$l.Hash}}","clicks":{{$l.Clicks}}}{{end}}
+    ]`);
+</script>
+
+<div class="space-y-8" x-data="statsApp(window.statsData)">
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+        <div class="glass p-6 rounded-xl border border-white/10 flex items-center justify-between">
+            <div>
+                <p class="text-slate-400 text-xs uppercase font-bold tracking-wider">Total de Links</p>
+                <p class="text-3xl font-black text-white mt-1">{{.TotalLinks}}</p>
+            </div>
+            <div class="p-3 bg-blue-500/20 rounded-lg text-blue-400">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+            </div>
+        </div>
+        <div class="glass p-6 rounded-xl border border-white/10 flex items-center justify-between">
+            <div>
+                <p class="text-slate-400 text-xs uppercase font-bold tracking-wider">Total de Cliques</p>
+                <p class="text-3xl font-black text-white mt-1">{{.TotalClicks}}</p>
+            </div>
+            <div class="p-3 bg-green-500/20 rounded-lg text-green-400">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+            </div>
+        </div>
+        <div class="glass p-6 rounded-xl border border-white/10 flex items-center justify-between">
+            <div>
+                <p class="text-slate-400 text-xs uppercase font-bold tracking-wider">Mensagens</p>
+                <p class="text-3xl font-black text-white mt-1">{{.TotalMessages}}</p>
+            </div>
+            <div class="p-3 bg-purple-500/20 rounded-lg text-purple-400">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+            </div>
+        </div>
     </div>
 
-    <div class="overflow-hidden rounded-xl border border-slate-700/50 shadow-inner bg-slate-900/30">
-        <table class="w-full text-left text-sm text-slate-400">
-            <thead class="bg-slate-900/80 text-slate-200 uppercase tracking-wider text-xs font-semibold border-b border-slate-700">
-                <tr>
-                    <th scope="col" class="px-6 py-4">Link Original</th>
-                    <th scope="col" class="px-6 py-4 text-center">Ações</th>
-                    <th scope="col" class="px-6 py-4 text-center">Cliques</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-slate-700/50">
-                {{range .Links}}
-                <tr class="hover:bg-white/5 transition duration-150 group">
-                    <td class="px-6 py-4 font-medium text-slate-300 truncate max-w-[200px] sm:max-w-[300px]">
-                        <div class="flex items-center gap-3">
-                            <div class="p-2 rounded bg-slate-800 border border-slate-700 text-slate-500 group-hover:text-blue-400 group-hover:border-blue-500/30 transition">
-                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+    <div class="glass rounded-2xl p-6 border border-white/10">
+        <h3 class="text-lg font-bold text-white mb-4">Top Links Mais Acessados</h3>
+        <div class="h-64 w-full">
+            <canvas id="clicksChart"></canvas>
+        </div>
+    </div>
+
+    <div class="glass rounded-2xl p-8 border border-white/10 relative overflow-hidden">
+        <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+            <h2 class="text-xl font-bold text-white">Gerenciar Links</h2>
+            
+            <div class="flex gap-2 w-full md:w-auto">
+                <form method="GET" action="/stats" class="flex-1 md:w-64 relative">
+                    <input type="text" name="q" value="{{.Query}}" placeholder="Buscar..." class="w-full pl-10 pr-4 py-2 bg-slate-800/50 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm text-white placeholder-slate-500 transition-all">
+                    <div class="absolute left-3 top-2.5 text-slate-400"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg></div>
+                </form>
+
+                <a href="/" class="px-4 py-2 rounded-lg bg-slate-800/50 hover:bg-slate-700 border border-slate-700 text-sm text-slate-300 transition-all hover:text-white flex items-center gap-2 whitespace-nowrap">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                    Sair
+                </a>
+            </div>
+        </div>
+
+        <div class="overflow-x-auto rounded-xl border border-slate-700/50 shadow-inner bg-slate-900/30">
+            <table class="w-full min-w-[600px] text-left text-sm text-slate-400">
+                <thead class="bg-slate-900/80 text-slate-200 uppercase tracking-wider text-xs font-semibold border-b border-slate-700">
+                    <tr>
+                        <th class="px-6 py-4">Link</th>
+                        <th class="px-6 py-4 text-center">Curto</th>
+                        <th class="px-6 py-4 text-center">Cliques</th>
+                        <th class="px-6 py-4 text-center">Ações</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-700/50">
+                    {{range .Links}}
+                    <tr class="hover:bg-white/5 transition duration-150 group">
+                        <td class="px-6 py-4 font-medium text-slate-300 max-w-[200px]">
+                            <div class="flex items-center gap-3">
+                                {{if .Password}}
+                                <div class="text-yellow-500" title="Protegido">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
+                                </div>
+                                {{end}}
+                                <div class="truncate" title="{{.OriginalURL}}">{{.OriginalURL}}</div>
                             </div>
-                            <span class="truncate" title="{{.OriginalURL}}">{{.OriginalURL}}</span>
-                        </div>
-                    </td>
-                    <td class="px-6 py-4 text-center">
-                        <a href="/?inspect={{.Hash}}" class="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-purple-500/10 text-purple-400 border border-purple-500/20 hover:bg-purple-500/20 hover:border-purple-500/40 transition text-xs font-medium cursor-pointer">
-                            <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                            {{.Hash}}
-                        </a>
-                    </td>
-                    <td class="px-6 py-4 text-center">
-                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-500/10 text-green-400 border border-green-500/20">
-                            {{.Clicks}}
-                        </span>
-                    </td>
-                </tr>
-                {{else}}
-                <tr>
-                    <td colspan="3" class="px-6 py-12 text-center">
-                        <div class="flex flex-col items-center justify-center text-slate-500">
-                            <svg class="w-12 h-12 mb-3 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
-                            <p class="text-lg font-medium">Nenhum link criado ainda</p>
-                        </div>
-                    </td>
-                </tr>
-                {{end}}
-            </tbody>
-        </table>
+                        </td>
+                        <td class="px-6 py-4 text-center">
+                            <a href="/?inspect={{.Hash}}" class="text-blue-400 hover:underline">{{.Hash}}</a>
+                        </td>
+                        <td class="px-6 py-4 text-center text-green-400 font-bold">{{.Clicks}}</td>
+                        <td class="px-6 py-4 text-center">
+                            <button @click="deleteItem($el, {{.ID}}, 'link')" class="p-2 text-slate-400 hover:text-red-400 transition"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
+                        </td>
+                    </tr>
+                    {{else}}
+                    <tr><td colspan="4" class="px-6 py-8 text-center text-slate-500">Nenhum dado encontrado.</td></tr>
+                    {{end}}
+                </tbody>
+            </table>
+        </div>
     </div>
+
+    <div class="glass rounded-2xl p-8 border border-white/10">
+        <h2 class="text-xl font-bold text-white mb-6">Mensagens Recebidas</h2>
+        <div class="overflow-x-auto rounded-xl border border-slate-700/50 shadow-inner bg-slate-900/30">
+            <table class="w-full min-w-[600px] text-left text-sm text-slate-400">
+                <thead class="bg-slate-900/80 text-slate-200 uppercase tracking-wider text-xs font-semibold border-b border-slate-700">
+                    <tr>
+                        <th class="px-6 py-4">De</th>
+                        <th class="px-6 py-4">Assunto</th>
+                        <th class="px-6 py-4">Mensagem</th>
+                        <th class="px-6 py-4 text-center">Ação</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-700/50">
+                    {{range .Messages}}
+                    <tr class="hover:bg-white/5">
+                        <td class="px-6 py-4">
+                            <div class="text-white font-medium">{{.Name}}</div>
+                            <div class="text-xs text-slate-500">{{.Email}}</div>
+                        </td>
+                        <td class="px-6 py-4">{{.Subject}}</td>
+                        <td class="px-6 py-4 truncate max-w-xs" title="{{.Message}}">{{.Message}}</td>
+                        <td class="px-6 py-4 text-center">
+                            <button @click="deleteItem($el, {{.ID}}, 'message')" class="p-2 text-slate-400 hover:text-red-400 transition"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
+                        </td>
+                    </tr>
+                    {{else}}
+                    <tr><td colspan="4" class="px-6 py-8 text-center text-slate-500">Caixa de entrada vazia.</td></tr>
+                    {{end}}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
 </div>
+<script src="/static/js/app.js"></script>
 {{end}}
