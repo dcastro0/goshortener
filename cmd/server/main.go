@@ -40,13 +40,29 @@ func main() {
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
+	e.Use(middleware.RateLimiter(middleware.NewRateLimiterMemoryStore(20)))
+
+	e.GET("/robots.txt", func(c echo.Context) error {
+		return c.String(http.StatusOK, "User-agent: *\nAllow: /\nDisallow: /stats\nDisallow: /link/")
+	})
+
+	e.GET("/sitemap.xml", func(c echo.Context) error {
+		sitemap := `<?xml version="1.0" encoding="UTF-8"?>
+		<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+			<url><loc>https://goshortener.com/</loc><changefreq>daily</changefreq></url>
+			<url><loc>https://goshortener.com/terms</loc><changefreq>monthly</changefreq></url>
+			<url><loc>https://goshortener.com/contact</loc><changefreq>monthly</changefreq></url>
+		</urlset>`
+		return c.XMLBlob(http.StatusOK, []byte(sitemap))
+	})
+
 	e.GET("/", func(c echo.Context) error {
 		return c.Render(http.StatusOK, "index", nil)
 	})
 
 	e.GET("/terms", func(c echo.Context) error { return c.Render(http.StatusOK, "terms", nil) })
 	e.GET("/contact", func(c echo.Context) error { return c.Render(http.StatusOK, "contact", nil) })
-	e.POST("/contact", handlers.SendContact) // Nova rota de API
+	e.POST("/contact", handlers.SendContact)
 
 	admin := e.Group("", middleware.BasicAuth(func(username, password string, c echo.Context) (bool, error) {
 		envUser := viper.GetString("ADMIN_USER")
