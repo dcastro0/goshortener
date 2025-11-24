@@ -8,6 +8,7 @@ import (
 	"goshortener/pkg/utils"
 	"net/http"
 	"net/url"
+	"runtime"
 	"strings"
 
 	"github.com/labstack/echo/v4"
@@ -161,7 +162,7 @@ func GetStats(c echo.Context) error {
 	q := c.QueryParam("q")
 
 	var links []models.ShortLink
-	query := database.DB.Order("created_at desc").Limit(50)
+	query := database.DB.Order("created_at desc").Limit(100)
 
 	if q != "" {
 		search := "%" + q + "%"
@@ -185,13 +186,22 @@ func GetStats(c echo.Context) error {
 	var totalMessages int64
 	database.DB.Model(&models.ContactMessage{}).Count(&totalMessages)
 
+	var mem runtime.MemStats
+	runtime.ReadMemStats(&mem)
+	memUsage := mem.Alloc / 1024 / 1024
+	numGoroutines := runtime.NumGoroutine()
+
 	return c.Render(http.StatusOK, "stats", map[string]interface{}{
+		"FullWidth":     true,
 		"Links":         links,
 		"Messages":      messages,
 		"Query":         q,
 		"TotalLinks":    totalLinks,
 		"TotalClicks":   totalClicks,
 		"TotalMessages": totalMessages,
+		"MemUsage":      memUsage,
+		"NumGoroutines": numGoroutines,
+		"GoVersion":     runtime.Version(),
 	})
 }
 

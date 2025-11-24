@@ -4,135 +4,180 @@
 
 {{define "content"}}
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <script>
     window.statsData = JSON.parse(`[
         {{range $i, $l := .Links}}{{if $i}},{{end}}{"hash":"{{$l.Hash}}","clicks":{{$l.Clicks}}}{{end}}
     ]`);
 </script>
 
-<div class="space-y-8" x-data="statsApp(window.statsData)">
+<div class="space-y-8 pb-12" x-data="statsApp(window.statsData)">
 
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-        <div class="glass p-6 rounded-xl border border-white/10 flex items-center justify-between">
-            <div>
-                <p class="text-slate-400 text-xs uppercase font-bold tracking-wider">Total de Links</p>
-                <p class="text-3xl font-black text-white mt-1">{{.TotalLinks}}</p>
-            </div>
-            <div class="p-3 bg-blue-500/20 rounded-lg text-blue-400">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
-            </div>
-        </div>
-        <div class="glass p-6 rounded-xl border border-white/10 flex items-center justify-between">
-            <div>
-                <p class="text-slate-400 text-xs uppercase font-bold tracking-wider">Total de Cliques</p>
-                <p class="text-3xl font-black text-white mt-1">{{.TotalClicks}}</p>
-            </div>
-            <div class="p-3 bg-green-500/20 rounded-lg text-green-400">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        
+        <div class="glass p-6 rounded-2xl border border-white/5 relative group hover:border-white/10 transition">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Total Links</p>
+                    <h3 class="text-3xl font-black text-white mt-1">{{.TotalLinks}}</h3>
+                </div>
+                <div class="p-2 bg-blue-500/20 rounded-lg text-blue-400">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+                </div>
             </div>
         </div>
-        <div class="glass p-6 rounded-xl border border-white/10 flex items-center justify-between">
-            <div>
-                <p class="text-slate-400 text-xs uppercase font-bold tracking-wider">Mensagens</p>
-                <p class="text-3xl font-black text-white mt-1">{{.TotalMessages}}</p>
+
+        <div class="glass p-6 rounded-2xl border border-white/5 relative group hover:border-white/10 transition">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Total Cliques</p>
+                    <h3 class="text-3xl font-black text-white mt-1">{{.TotalClicks}}</h3>
+                </div>
+                <div class="p-2 bg-green-500/20 rounded-lg text-green-400">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                </div>
             </div>
-            <div class="p-3 bg-purple-500/20 rounded-lg text-purple-400">
-                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+        </div>
+
+        <div class="glass p-6 rounded-2xl border border-white/5 relative group hover:border-white/10 transition">
+            <div class="flex justify-between items-start">
+                <div>
+                    <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Mensagens</p>
+                    <h3 class="text-3xl font-black text-white mt-1">{{.TotalMessages}}</h3>
+                </div>
+                <div class="p-2 bg-purple-500/20 rounded-lg text-purple-400">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass p-6 rounded-2xl border border-white/5 relative group hover:border-white/10 transition">
+            <div class="flex justify-between items-start mb-2">
+                <p class="text-slate-400 text-xs font-bold uppercase tracking-wider">Server Health</p>
+                <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse shadow-[0_0_10px_rgba(34,197,94,0.5)]"></div>
+            </div>
+            <div class="space-y-2">
+                <div class="flex justify-between text-sm">
+                    <span class="text-slate-500">Memória</span>
+                    <span class="text-white font-mono">{{.MemUsage}} MB</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                    <span class="text-slate-500">Goroutines</span>
+                    <span class="text-white font-mono">{{.NumGoroutines}}</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                    <span class="text-slate-500">Versão Go</span>
+                    <span class="text-blue-400 font-mono text-xs">{{.GoVersion}}</span>
+                </div>
             </div>
         </div>
     </div>
 
-    <div class="glass rounded-2xl p-6 border border-white/10">
-        <h3 class="text-lg font-bold text-white mb-4">Top Links Mais Acessados</h3>
-        <div class="h-64 w-full">
-            <canvas id="clicksChart"></canvas>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        
+        <div class="glass rounded-2xl p-6 border border-white/10 lg:col-span-2 h-96 flex flex-col">
+            <h3 class="text-lg font-bold text-white mb-6 flex items-center gap-2">
+                <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path></svg>
+                Performance de Cliques
+            </h3>
+            <div class="flex-grow relative w-full">
+                <canvas id="clicksChart"></canvas>
+            </div>
         </div>
-    </div>
 
-    <div class="glass rounded-2xl p-8 border border-white/10 relative overflow-hidden">
-        <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
-            <h2 class="text-xl font-bold text-white">Gerenciar Links</h2>
-            
-            <div class="flex gap-2 w-full md:w-auto">
-                <form method="GET" action="/stats" class="flex-1 md:w-64 relative">
-                    <input type="text" name="q" value="{{.Query}}" placeholder="Buscar..." class="w-full pl-10 pr-4 py-2 bg-slate-800/50 border border-slate-600 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none text-sm text-white placeholder-slate-500 transition-all">
-                    <div class="absolute left-3 top-2.5 text-slate-400"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg></div>
+        <div class="glass rounded-2xl p-6 border border-white/10 flex flex-col gap-6">
+            <div>
+                <h3 class="text-lg font-bold text-white mb-4">Filtrar Resultados</h3>
+                <form method="GET" action="/stats" class="relative">
+                    <input type="text" name="q" value="{{.Query}}" placeholder="Buscar link, hash..." 
+                        class="w-full pl-10 pr-4 py-3 bg-slate-800/50 border border-slate-600 rounded-xl focus:ring-2 focus:ring-blue-500 outline-none text-sm text-white placeholder-slate-500 transition-all shadow-inner">
+                    <div class="absolute left-3 top-3.5 text-slate-400">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                    </div>
                 </form>
-
-                <a href="/" class="px-4 py-2 rounded-lg bg-slate-800/50 hover:bg-slate-700 border border-slate-700 text-sm text-slate-300 transition-all hover:text-white flex items-center gap-2 whitespace-nowrap">
-                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-                    Sair
-                </a>
+            </div>
+            
+            <div class="p-4 bg-blue-500/10 rounded-xl border border-blue-500/20">
+                <h4 class="text-blue-400 font-bold text-sm mb-1">Dica Pro</h4>
+                <p class="text-slate-400 text-xs leading-relaxed">Use o campo de busca para encontrar links antigos rapidamente. A exclusão é permanente.</p>
             </div>
         </div>
+    </div>
 
-        <div class="overflow-x-auto rounded-xl border border-slate-700/50 shadow-inner bg-slate-900/30">
-            <table class="w-full min-w-[600px] text-left text-sm text-slate-400">
-                <thead class="bg-slate-900/80 text-slate-200 uppercase tracking-wider text-xs font-semibold border-b border-slate-700">
+    <div class="glass rounded-2xl border border-white/10 overflow-hidden">
+        <div class="p-6 border-b border-white/5 flex items-center gap-3 bg-white/5">
+            <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"></path></svg>
+            <h3 class="font-bold text-white">Gerenciamento de Links</h3>
+        </div>
+        
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm text-slate-400">
+                <thead class="bg-slate-900/50 text-slate-200 uppercase tracking-wider text-xs font-semibold">
                     <tr>
-                        <th class="px-6 py-4">Link</th>
+                        <th class="px-6 py-4">Original</th>
                         <th class="px-6 py-4 text-center">Curto</th>
                         <th class="px-6 py-4 text-center">Cliques</th>
-                        <th class="px-6 py-4 text-center">Ações</th>
+                        <th class="px-6 py-4 text-right">Ações</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-700/50">
+                <tbody class="divide-y divide-white/5">
                     {{range .Links}}
                     <tr class="hover:bg-white/5 transition duration-150 group">
-                        <td class="px-6 py-4 font-medium text-slate-300 max-w-[200px]">
-                            <div class="flex items-center gap-3">
-                                {{if .Password}}
-                                <div class="text-yellow-500" title="Protegido">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>
-                                </div>
-                                {{end}}
-                                <div class="truncate" title="{{.OriginalURL}}">{{.OriginalURL}}</div>
+                        <td class="px-6 py-4 font-medium text-slate-300 max-w-[300px] truncate" title="{{.OriginalURL}}">
+                            <div class="flex items-center gap-2">
+                                {{if .Password}}<span class="text-yellow-500">🔒</span>{{end}}
+                                {{.OriginalURL}}
                             </div>
                         </td>
                         <td class="px-6 py-4 text-center">
-                            <a href="/?inspect={{.Hash}}" class="text-blue-400 hover:underline">{{.Hash}}</a>
+                            <a href="/?inspect={{.Hash}}" class="text-blue-400 hover:text-blue-300 font-mono bg-blue-500/10 px-2 py-1 rounded border border-blue-500/20">{{.Hash}}</a>
                         </td>
                         <td class="px-6 py-4 text-center text-green-400 font-bold">{{.Clicks}}</td>
-                        <td class="px-6 py-4 text-center">
-                            <button @click="deleteItem($el, {{.ID}}, 'link')" class="p-2 text-slate-400 hover:text-red-400 transition"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
+                        <td class="px-6 py-4 text-right">
+                            <button @click="deleteItem($el, {{.ID}}, 'link')" class="p-2 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                            </button>
                         </td>
                     </tr>
                     {{else}}
-                    <tr><td colspan="4" class="px-6 py-8 text-center text-slate-500">Nenhum dado encontrado.</td></tr>
+                    <tr><td colspan="4" class="px-6 py-12 text-center text-slate-500 italic">Nenhum link encontrado.</td></tr>
                     {{end}}
                 </tbody>
             </table>
         </div>
     </div>
 
-    <div class="glass rounded-2xl p-8 border border-white/10">
-        <h2 class="text-xl font-bold text-white mb-6">Mensagens Recebidas</h2>
-        <div class="overflow-x-auto rounded-xl border border-slate-700/50 shadow-inner bg-slate-900/30">
-            <table class="w-full min-w-[600px] text-left text-sm text-slate-400">
-                <thead class="bg-slate-900/80 text-slate-200 uppercase tracking-wider text-xs font-semibold border-b border-slate-700">
+    <div class="glass rounded-2xl border border-white/10 overflow-hidden">
+        <div class="p-6 border-b border-white/5 flex items-center gap-3 bg-white/5">
+            <svg class="w-5 h-5 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+            <h3 class="font-bold text-white">Inbox</h3>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm text-slate-400">
+                <thead class="bg-slate-900/50 text-slate-200 uppercase tracking-wider text-xs font-semibold">
                     <tr>
                         <th class="px-6 py-4">De</th>
                         <th class="px-6 py-4">Assunto</th>
                         <th class="px-6 py-4">Mensagem</th>
-                        <th class="px-6 py-4 text-center">Ação</th>
+                        <th class="px-6 py-4 text-right">Ação</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-700/50">
+                <tbody class="divide-y divide-white/5">
                     {{range .Messages}}
-                    <tr class="hover:bg-white/5">
+                    <tr class="hover:bg-white/5 transition">
                         <td class="px-6 py-4">
                             <div class="text-white font-medium">{{.Name}}</div>
                             <div class="text-xs text-slate-500">{{.Email}}</div>
                         </td>
                         <td class="px-6 py-4">{{.Subject}}</td>
-                        <td class="px-6 py-4 truncate max-w-xs" title="{{.Message}}">{{.Message}}</td>
-                        <td class="px-6 py-4 text-center">
-                            <button @click="deleteItem($el, {{.ID}}, 'message')" class="p-2 text-slate-400 hover:text-red-400 transition"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg></button>
+                        <td class="px-6 py-4 text-slate-400 max-w-[400px] truncate" title="{{.Message}}">{{.Message}}</td>
+                        <td class="px-6 py-4 text-right">
+                            <button @click="deleteItem($el, {{.ID}}, 'message')" class="p-2 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                            </button>
                         </td>
                     </tr>
                     {{else}}
-                    <tr><td colspan="4" class="px-6 py-8 text-center text-slate-500">Caixa de entrada vazia.</td></tr>
+                    <tr><td colspan="4" class="px-6 py-12 text-center text-slate-500 italic">Caixa de entrada vazia.</td></tr>
                     {{end}}
                 </tbody>
             </table>
@@ -140,5 +185,4 @@
     </div>
 
 </div>
-<script src="/static/js/app.js"></script>
 {{end}}
