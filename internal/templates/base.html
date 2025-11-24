@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GoShortener Admin</title>
+    <title>GoShortener</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -38,15 +38,6 @@
             <span class="font-bold text-xl tracking-tight">GoShortener <span class="text-xs bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded ml-1">ADMIN</span></span>
         </div>
         <a href="/" class="text-sm text-slate-400 hover:text-white transition">Sair</a>
-    </nav>
-    {{else}}
-    <nav class="absolute top-6 right-6 z-20">
-        <a href="/stats" class="px-4 py-2 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-sm font-medium text-slate-300 transition-all hover:text-white hover:border-white/30 backdrop-blur-sm flex items-center gap-2 group shadow-lg">
-            <svg class="w-4 h-4 text-slate-400 group-hover:text-blue-400 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
-            </svg>
-            Dashboard
-        </a>
     </nav>
     {{end}}
 
