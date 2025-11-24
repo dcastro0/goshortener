@@ -4,27 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GoShortener - Encurtador de Links Gratuito e Seguro</title>
-    
-    <meta name="description" content="Encurte seus links longos em segundos. Gere QR Codes, proteja com senha e acompanhe estatísticas de cliques em tempo real com o GoShortener.">
-    <meta name="keywords" content="encurtador de url, shortener, link curto, qr code, analytics, go, golang">
-    <meta name="author" content="GoShortener Team">
-    <meta name="robots" content="index, follow">
-
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://goshortener.com/">
-    <meta property="og:title" content="GoShortener - Encurte, Proteja e Monitore">
-    <meta property="og:description" content="A ferramenta definitiva para gerenciar seus links. Proteção por senha, dashboard completo e QR Code instantâneo.">
-    <meta property="og:image" content="https://via.placeholder.com/1200x630/1e293b/60a5fa?text=GoShortener+🚀">
-
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://goshortener.com/">
-    <meta property="twitter:title" content="GoShortener - Encurte, Proteja e Monitore">
-    <meta property="twitter:description" content="A ferramenta definitiva para gerenciar seus links. Proteção por senha, dashboard completo e QR Code instantâneo.">
-    <meta property="twitter:image" content="https://via.placeholder.com/1200x630/1e293b/60a5fa?text=GoShortener+🚀">
-
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>">
-
+    <title>GoShortener - Encurtador Profissional</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.13.3/dist/cdn.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -36,10 +16,6 @@
             -webkit-backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
-        ::-webkit-scrollbar { width: 8px; height: 8px; }
-        ::-webkit-scrollbar-track { background: rgba(30, 41, 59, 0.5); }
-        ::-webkit-scrollbar-thumb { background: rgba(75, 85, 99, 0.8); border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(107, 114, 128, 1); }
     </style>
 </head>
 <body class="bg-slate-900 text-slate-50 min-h-screen flex flex-col items-center relative overflow-x-hidden overflow-y-auto">
@@ -50,31 +26,36 @@
     </div>
 
     {{if .FullWidth}}
-    <nav class="w-full max-w-7xl px-6 py-4 flex justify-between items-center z-20">
+    <nav class="w-full max-w-7xl px-6 py-4 flex justify-between items-center z-20 border-b border-white/5 backdrop-blur-md">
         <div class="flex items-center gap-2">
-            <div class="p-1.5 bg-gradient-to-br from-blue-500 to-purple-500 rounded-lg">
-                <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+            <div class="p-1.5 bg-blue-600 rounded-lg text-white shadow-lg shadow-blue-500/30">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-5 h-5">
+                    <path fill-rule="evenodd" d="M19.902 4.098a3.75 3.75 0 0 0-5.304 0l-4.5 4.5a3.75 3.75 0 0 0 1.035 6.037.75.75 0 0 1-.646 1.353 5.25 5.25 0 0 1-1.449-8.45l4.5-4.5a5.25 5.25 0 1 1 7.424 7.424l-1.757 1.757a.75.75 0 1 1-1.06-1.06l1.757-1.757a3.75 3.75 0 0 0 0-5.304Zm-7.389 4.267a.75.75 0 0 1 1-.353 5.25 5.25 0 0 1 1.449 8.45l-4.5 4.5a5.25 5.25 0 1 1-7.424-7.424l1.757-1.757a.75.75 0 1 1 1.06 1.06l-1.757 1.757a3.75 3.75 0 1 0 5.304 5.304l4.5-4.5a3.75 3.75 0 0 0-1.035-6.037.75.75 0 0 1-.354-1Z" clip-rule="evenodd" />
+                </svg>
             </div>
-            <span class="font-bold text-xl tracking-tight">GoShortener <span class="text-xs bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded ml-1">ADMIN</span></span>
+            <span class="font-bold text-lg tracking-tight text-white">GoShortener <span class="text-[10px] font-extrabold uppercase tracking-widest bg-slate-800 border border-slate-700 text-slate-400 px-2 py-0.5 rounded ml-2">Admin</span></span>
         </div>
-        <a href="/" class="text-sm text-slate-400 hover:text-white transition">Sair</a>
+        <a href="/" class="flex items-center gap-2 text-sm font-medium text-slate-400 hover:text-white transition group">
+            <span>Sair</span>
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4 group-hover:translate-x-0.5 transition-transform">
+                <path fill-rule="evenodd" d="M3 10a.75.75 0 0 1 .75-.75h10.638L10.23 5.29a.75.75 0 1 1 1.04-1.08l5.5 5.25a.75.75 0 0 1 0 1.08l-5.5 5.25a.75.75 0 1 1-1.04-1.08l4.158-3.96H3.75A.75.75 0 0 1 3 10Z" clip-rule="evenodd" />
+            </svg>
+        </a>
     </nav>
     {{end}}
 
-    <main class="w-full p-4 relative z-10 {{if .FullWidth}}max-w-7xl mt-4{{else}}max-w-xl flex-grow flex flex-col justify-center{{end}}">
+    <main class="w-full p-4 relative z-10 {{if .FullWidth}}max-w-7xl mt-8{{else}}max-w-xl flex-grow flex flex-col justify-center{{end}}">
         {{if not .FullWidth}}
-        <header class="mb-10 text-center">
-            <div class="inline-flex items-center gap-3 mb-2 animate-bounce-slow">
-                <div class="p-2 bg-gradient-to-br from-blue-500 to-purple-500 rounded-xl shadow-lg">
-                    <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                    </svg>
-                </div>
-                <h1 class="text-5xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 tracking-tight">
-                    GoShortener
-                </h1>
+        <header class="mb-12 text-center">
+            <div class="inline-flex items-center justify-center p-3 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl shadow-2xl shadow-blue-900/20 mb-6 ring-1 ring-white/20">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-10 h-10 text-white">
+                    <path fill-rule="evenodd" d="M19.902 4.098a3.75 3.75 0 0 0-5.304 0l-4.5 4.5a3.75 3.75 0 0 0 1.035 6.037.75.75 0 0 1-.646 1.353 5.25 5.25 0 0 1-1.449-8.45l4.5-4.5a5.25 5.25 0 1 1 7.424 7.424l-1.757 1.757a.75.75 0 1 1-1.06-1.06l1.757-1.757a3.75 3.75 0 0 0 0-5.304Zm-7.389 4.267a.75.75 0 0 1 1-.353 5.25 5.25 0 0 1 1.449 8.45l-4.5 4.5a5.25 5.25 0 1 1-7.424-7.424l1.757-1.757a.75.75 0 1 1 1.06 1.06l-1.757 1.757a3.75 3.75 0 1 0 5.304 5.304l4.5-4.5a3.75 3.75 0 0 0-1.035-6.037.75.75 0 0 1-.354-1Z" clip-rule="evenodd" />
+                </svg>
             </div>
-            <p class="text-slate-400 text-base font-light tracking-wide">Gerencie seus links com estilo e performance.</p>
+            <h1 class="text-4xl md:text-5xl font-bold text-white tracking-tight mb-3">
+                GoShortener
+            </h1>
+            <p class="text-slate-400 text-lg font-light max-w-sm mx-auto">Links curtos, QR Codes instantâneos e análises precisas.</p>
         </header>
         {{end}}
 
@@ -82,14 +63,19 @@
     </main>
 
     {{if not .FullWidth}}
-    <footer class="w-full max-w-xl mt-12 mb-6 px-4 relative z-10">
-        <div class="border-t border-slate-800 pt-6 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-slate-500">
-            <div>&copy; 2025 GoShortener.</div>
-            <div class="flex gap-6">
-                <a href="/terms" class="hover:text-blue-400 transition">Termos</a>
-                <a href="/contact" class="hover:text-purple-400 transition">Contato</a>
-                <a href="https://github.com/dcastro0" target="_blank" class="hover:text-white transition">GitHub</a>
-            </div>
+    <footer class="w-full max-w-xl mt-auto mb-6 px-6 py-4 relative z-10 text-center">
+        <div class="inline-flex gap-6 text-sm font-medium text-slate-500">
+            <a href="/terms" class="hover:text-blue-400 transition-colors">Termos</a>
+            <span class="text-slate-700">•</span>
+            <a href="/contact" class="hover:text-purple-400 transition-colors">Contato</a>
+            <span class="text-slate-700">•</span>
+            <a href="https://github.com" target="_blank" class="hover:text-white transition-colors flex items-center gap-1">
+                GitHub
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" class="w-3 h-3">
+                    <path fill-rule="evenodd" d="M4.25 5.5a.75.75 0 0 0-.75.75v8.5c0 .414.336.75.75.75h8.5a.75.75 0 0 0 .75-.75v-4a.75.75 0 0 1 1.5 0v4A2.25 2.25 0 0 1 12.75 17h-8.5A2.25 2.25 0 0 1 2 14.75v-8.5A2.25 2.25 0 0 1 4.25 4h5a.75.75 0 0 1 0 1.5h-5Z" clip-rule="evenodd" />
+                    <path fill-rule="evenodd" d="M6.194 12.753a.75.75 0 0 0 1.06.053L16.5 4.44v2.81a.75.75 0 0 0 1.5 0v-4.5a.75.75 0 0 0-.75-.75h-4.5a.75.75 0 0 0 0 1.5h2.553l-9.056 8.194a.75.75 0 0 0-.053 1.06Z" clip-rule="evenodd" />
+                </svg>
+            </a>
         </div>
     </footer>
     {{end}}

@@ -76,6 +76,7 @@ func main() {
 
 	admin.GET("/stats", handlers.GetStats)
 	admin.DELETE("/link/:id", handlers.DeleteLink)
+	admin.PUT("/link/:id", handlers.UpdateLink)
 	admin.DELETE("/message/:id", handlers.DeleteMessage)
 
 	e.POST("/inspect", handlers.InspectLink)

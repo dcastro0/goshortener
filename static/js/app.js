@@ -82,6 +82,14 @@ document.addEventListener('alpine:init', () => {
     }));
 
     Alpine.data('statsApp', (chartData = []) => ({
+        isEditModalOpen: false,
+        editingId: null,
+        editForm: {
+            url: '',
+            alias: ''
+        },
+        loading: false,
+
         init() {
             this.renderChart(chartData);
         },
@@ -89,9 +97,7 @@ document.addEventListener('alpine:init', () => {
         renderChart(data) {
             const ctx = document.getElementById('clicksChart');
             if (!ctx) return;
-
             const topLinks = data.slice(0, 10);
-
             new Chart(ctx.getContext('2d'), {
                 type: 'bar',
                 data: {
@@ -109,19 +115,43 @@ document.addEventListener('alpine:init', () => {
                     responsive: true,
                     maintainAspectRatio: false,
                     scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: { color: 'rgba(255, 255, 255, 0.1)' },
-                            ticks: { color: '#94a3b8' }
-                        },
-                        x: {
-                            grid: { display: false },
-                            ticks: { color: '#94a3b8' }
-                        }
+                        y: { beginAtZero: true, grid: { color: 'rgba(255, 255, 255, 0.1)' }, ticks: { color: '#94a3b8' } },
+                        x: { grid: { display: false }, ticks: { color: '#94a3b8' } }
                     },
                     plugins: { legend: { display: false } }
                 }
             });
+        },
+
+        openEditModal(link) {
+            this.editingId = link.id;
+            this.editForm.url = link.url;
+            this.editForm.alias = link.hash;
+            this.isEditModalOpen = true;
+        },
+
+        async submitEdit() {
+            this.loading = true;
+            try {
+                const res = await fetch('/link/' + this.editingId, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(this.editForm)
+                });
+                const data = await res.json();
+
+                if (res.ok) {
+                    alert('Link atualizado! A página será recarregada.');
+                    window.location.reload(); 
+                } else {
+                    alert('Erro: ' + data.error);
+                }
+            } catch (e) {
+                console.error(e);
+                alert('Erro de conexão');
+            } finally {
+                this.loading = false;
+            }
         },
 
         async deleteItem(btn, id, type) {

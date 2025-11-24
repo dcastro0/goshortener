@@ -220,3 +220,41 @@ func DeleteMessage(c echo.Context) error {
 	}
 	return c.NoContent(http.StatusNoContent)
 }
+
+type UpdateLinkRequest struct {
+	OriginalURL string `json:"url"`
+	Hash        string `json:"alias"`
+}
+
+func UpdateLink(c echo.Context) error {
+	id := c.Param("id")
+	req := new(UpdateLinkRequest)
+	if err := c.Bind(req); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "Dados inválidos"})
+	}
+
+	if _, err := url.ParseRequestURI(req.OriginalURL); err != nil {
+		return c.JSON(http.StatusBadRequest, map[string]string{"error": "URL inválida"})
+	}
+
+	var link models.ShortLink
+	if err := database.DB.First(&link, id).Error; err != nil {
+		return c.JSON(http.StatusNotFound, map[string]string{"error": "Link não encontrado"})
+	}
+
+	if req.Hash != link.Hash {
+		var existing models.ShortLink
+		if err := database.DB.Where("hash = ?", req.Hash).First(&existing).Error; err == nil {
+			return c.JSON(http.StatusConflict, map[string]string{"error": "Este alias já está em uso"})
+		}
+	}
+
+	link.OriginalURL = req.OriginalURL
+	link.Hash = req.Hash
+
+	if err := database.DB.Save(&link).Error; err != nil {
+		return c.JSON(http.StatusInternalServerError, map[string]string{"error": "Erro ao atualizar"})
+	}
+
+	return c.JSON(http.StatusOK, map[string]string{"message": "Link atualizado com sucesso!"})
+}
