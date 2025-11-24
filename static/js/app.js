@@ -1,9 +1,12 @@
 document.addEventListener('alpine:init', () => {
     Alpine.data('shortenerApp', () => ({
         mode: 'create',
+        
         url: '',
         alias: '',
         password: '',
+        expiryOption: '30d',
+        
         showAlias: false,
         shortenResult: null,
         inspectCode: '',
@@ -23,10 +26,39 @@ document.addEventListener('alpine:init', () => {
             }
         },
 
+        calculateDatePreview(option) {
+            const now = new Date();
+            let target = new Date();
+
+            if (option === '24h') target.setHours(now.getHours() + 24);
+            if (option === '7d') target.setDate(now.getDate() + 7);
+            if (option === '30d') target.setDate(now.getDate() + 30);
+
+            return target.toLocaleString('pt-BR', { 
+                day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' 
+            });
+        },
+
+        calculateExpiresAt() {
+            const now = new Date();
+            let target = new Date();
+
+            if (this.expiryOption === '24h') target.setHours(now.getHours() + 24);
+            if (this.expiryOption === '7d') target.setDate(now.getDate() + 7);
+            if (this.expiryOption === '30d') target.setDate(now.getDate() + 30);
+
+            const offset = target.getTimezoneOffset() * 60000;
+            const localISOTime = (new Date(target - offset)).toISOString().slice(0, 16);
+            return localISOTime;
+        },
+
         async submitShorten() {
             this.loading = true;
             this.error = null;
             this.shortenResult = null;
+
+            const finalExpiryDate = this.calculateExpiresAt();
+
             try {
                 const response = await fetch('/shorten', {
                     method: 'POST',
@@ -34,15 +66,18 @@ document.addEventListener('alpine:init', () => {
                     body: JSON.stringify({ 
                         url: this.url, 
                         alias: this.alias,
-                        password: this.password 
+                        password: this.password,
+                        expires_at: finalExpiryDate
                     })
                 });
                 const data = await response.json();
                 if (!response.ok) throw new Error(data.error || 'Erro ao encurtar');
+
                 this.shortenResult = data;
                 this.url = '';
                 this.alias = '';
                 this.password = '';
+                this.expiryOption = '30d';
                 this.showAlias = false;
             } catch (err) {
                 this.error = err.message;
@@ -58,10 +93,7 @@ document.addEventListener('alpine:init', () => {
                 const response = await fetch('/inspect', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ 
-                        code: this.inspectCode,
-                        password: this.inspectPassword 
-                    })
+                    body: JSON.stringify({ code: this.inspectCode, password: this.inspectPassword })
                 });
                 const data = await response.json();
                 if (!response.ok) throw new Error(data.error || 'Link não encontrado');
@@ -84,15 +116,10 @@ document.addEventListener('alpine:init', () => {
     Alpine.data('statsApp', (chartData = []) => ({
         isEditModalOpen: false,
         editingId: null,
-        editForm: {
-            url: '',
-            alias: ''
-        },
+        editForm: { url: '', alias: '' },
         loading: false,
 
-        init() {
-            this.renderChart(chartData);
-        },
+        init() { this.renderChart(chartData); },
 
         renderChart(data) {
             const ctx = document.getElementById('clicksChart');
@@ -139,10 +166,9 @@ document.addEventListener('alpine:init', () => {
                     body: JSON.stringify(this.editForm)
                 });
                 const data = await res.json();
-
                 if (res.ok) {
                     alert('Link atualizado! A página será recarregada.');
-                    window.location.reload(); 
+                    window.location.reload();
                 } else {
                     alert('Erro: ' + data.error);
                 }
@@ -157,10 +183,8 @@ document.addEventListener('alpine:init', () => {
         async deleteItem(btn, id, type) {
             const text = type === 'link' ? 'este link' : 'esta mensagem';
             if (!confirm('Tem certeza que deseja excluir ' + text + ' permanentemente?')) return;
-
             btn.disabled = true;
             btn.classList.add('opacity-50', 'cursor-not-allowed');
-
             try {
                 const res = await fetch('/' + type + '/' + id, { method: 'DELETE' });
                 if (res.ok) {

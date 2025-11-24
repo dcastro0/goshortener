@@ -1,6 +1,10 @@
 package models
 
-import "gorm.io/gorm"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type ShortLink struct {
 	gorm.Model
@@ -8,6 +12,7 @@ type ShortLink struct {
 	Hash        string `gorm:"uniqueIndex;not null;size:10"`
 	Password    string `gorm:"size:255"`
 	Clicks      int    `gorm:"default:0"`
+	ExpiresAt   *time.Time
 }
 
 type ContactMessage struct {
